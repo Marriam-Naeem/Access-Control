@@ -16,6 +16,9 @@
 
     body {
         font-family: 'Guminert', sans-serif;
+        font-weight: 500;
+        background-color: rgb(202, 235, 221);
+        background-image: url("{{ url_for('static', filename='img/back.svg') }}");
         display: flex;
         align-items: center;
         justify-content: center;
@@ -60,7 +63,7 @@
     }
 
     button {
-        background-color: #93d395;
+        background-color: rgb(125, 209, 177);
         color: #fff;
         padding: 10px 15px;
         border: none;
@@ -75,7 +78,7 @@
     }
 
     button:hover {
-        background-color: #45a049;
+        background-color: rgb(80, 202, 155);
     }
 
     body {
@@ -109,13 +112,24 @@
     option {
         padding: 5px;
     }
+
+    h1 {
+        text-align: center;
+
+    }
+
+    p {
+        text-align: center;
+
+    }
 </style>
 
 <body>
-    <h1>OTP Verification</h1>
-    <p>Enter the OTP sent to your email and select a resource:</p>
+
 
     <form method="post" action="/verify_otp_and_grant_access">
+        <h1>OTP Verification</h1>
+        <p>Enter the OTP sent to your email and select a resource:</p>
         <input type="hidden" name="email" value="{{ email }}">
         <label for="otp">OTP:</label>
         <input type="text" name="otp" required title="otp">

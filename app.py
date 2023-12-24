@@ -261,11 +261,11 @@ def verify_otp_and_grant_access():
     if entered_otp == stored_otp:
         # OTP verified, now check access
         if grant_access(selected_resource, EMAIL):
-            return f'Access granted to {selected_resource}!'
+            return flask.render_template('access_granted.html', resource=selected_resource)
         else:
-            return f'Access denied to {selected_resource}. Please check your permissions.'
+            return flask.render_template('access_denied.html', resource=selected_resource)
     else:
-        return 'Invalid OTP. Please try again.'
+        return flask.render_template('index.html', message='Authentication failed due to Incorrect OTP')
 
 
 def authenticate_user(email, password):
