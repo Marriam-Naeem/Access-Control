@@ -154,6 +154,7 @@
 import flask
 import random
 import string
+import socket
 from flask_mail import Mail, Message
 
 app = flask.Flask(__name__, template_folder='templates')
@@ -167,6 +168,39 @@ app.config['MAIL_PASSWORD'] = 'yhqq uoji swbj qfbq'  # Replace with your Gmail p
 
 mail = Mail(app)
 STORED_OTP = ''
+EMAIL=''
+
+def check_location_access():
+    def get_first_two_octets(ip_address):
+        return '.'.join(ip_address.split('.')[:2])
+    hostname = socket.gethostname()
+    host_ip_address = socket.gethostbyname(hostname)
+    required_ip = "100.5.6.7"
+    return get_first_two_octets(host_ip_address) == get_first_two_octets(required_ip)
+
+def get_user_role(email):
+    users_info = get_attributes_dict()
+    for user_info in users_info:
+        if user_info['email'] == email:
+            return user_info['Role']
+    return None  # Return None if the email is not found
+
+def grant_access(resource, email):
+    if check_location_access():
+        role = get_user_role(email)
+        if role == 'Project_Manager' & resource == 'Project':
+            return True
+        elif role == 'Developer' & resource == 'Task':
+            return True
+        elif role == 'Developer' & resource == 'Bug':
+            return True
+        elif role == 'Developer' & resource == 'Project':
+            return False
+        elif role == 'Developer' & resource == 'Code':
+            return True
+        elif role == 'SQA_Engineer' & resource == 'Project':
+            return False
+
 def generate_otp():
     return ''.join(random.choices(string.digits, k=6))
 
@@ -188,6 +222,8 @@ def main():
         return flask.render_template('index.html')
     elif flask.request.method == 'POST':
         email = flask.request.form['Email']
+        global EMAIL
+        EMAIL=email
         password = flask.request.form['Password']
 
         # Authenticate the user using AccessControl
@@ -251,12 +287,12 @@ def get_attributes_dict():
             'OTP': ''
         },
         {
-            'email': 'zanwaar.bese20seecs@seecs.edu.pk',
+            'email': 'tanwaar.bese20seecs@seecs.edu.pk',
             'password': 'password',
             'username': 'zanwaarpassword',
             'MFA_Enabled': True,
             'IPv4': '39.58.249.103',
-            'Role': 'Project_Manager',
+            'Role': 'Developer',
             'OTP': ''
         },
         {
@@ -265,7 +301,7 @@ def get_attributes_dict():
             'username': 'sanwaarpassword',
             'MFA_Enabled': True,
             'IPv4': '39.58.249.103',
-            'Role': 'Project_Manager',
+            'Role': 'Developer',
             'OTP': ''
         }
     ]
