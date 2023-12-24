@@ -1,5 +1,5 @@
 
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 import flask
 import random
 import string
@@ -7,7 +7,7 @@ import socket
 from flask_mail import Mail, Message
 
 app = flask.Flask(__name__, template_folder='templates', static_folder='static')
-
+LOGIN_ATTEMPTS = {}  # Dictionary to store failed login attempts with timestamps
 
 # Flask-Mail configuration
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -19,6 +19,34 @@ app.config['MAIL_PASSWORD'] = 'yhqq uoji swbj qfbq'  # Replace with your Gmail p
 mail = Mail(app)
 STORED_OTP = ''
 EMAIL=''
+LOCKOUT_THRESHOLD = 3  # Number of allowed unsuccessful login attempts
+LOCKOUT_TIMEFRAME = timedelta(minutes=5)  # Time frame for counting failed attempts
+LOCKOUT_DURATION = timedelta(minutes=10)  # Lockout duration if the threshold is reached
+
+
+def increment_failed_login_attempts(email):
+    if email in LOGIN_ATTEMPTS:
+        LOGIN_ATTEMPTS[email]['attempts'] += 1
+    else:
+        LOGIN_ATTEMPTS[email] = {'attempts': 1, 'timestamp': datetime.now()}
+
+
+def reset_failed_login_attempts(email):
+    if email in LOGIN_ATTEMPTS:
+        del LOGIN_ATTEMPTS[email]
+
+
+def is_user_locked_out(email):
+    if email in LOGIN_ATTEMPTS:
+        attempts_info = LOGIN_ATTEMPTS[email]
+        timestamp = attempts_info['timestamp']
+        attempts = attempts_info['attempts']
+
+        # Check if the threshold is reached within the specified timeframe
+        if attempts >= LOCKOUT_THRESHOLD and datetime.now() - timestamp < LOCKOUT_TIMEFRAME:
+            return True
+
+    return False
 
 def check_location_access():
     def get_first_two_octets(ip_address):
@@ -83,20 +111,28 @@ def main():
     elif flask.request.method == 'POST':
         email = flask.request.form['Email']
         global EMAIL
-        EMAIL=email
+        EMAIL = email
         password = flask.request.form['Password']
+
+        # Check if the user is locked out
+        if is_user_locked_out(email):
+            return flask.render_template('index.html', message='Account locked due to multiple unsuccessful login attempts. Please try again later.')
 
         # Authenticate the user using AccessControl
         auth_result = authenticate_user(email, password)
 
         if auth_result:
+            reset_failed_login_attempts(email)  # Reset failed login attempts upon successful login
             otp = generate_otp()
             set_stored_otp(otp)
             send_otp_email(email, otp)
             return flask.render_template('otp_input.html', email=email)
         else:
-            return flask.render_template('index.html', message='Authentication failed. Please check your credentials.')
-
+            increment_failed_login_attempts(email)
+            if is_user_locked_out(email):
+                return flask.render_template('index.html', message='Account locked due to multiple unsuccessful login attempts. Please try again later.')
+            else:
+                return flask.render_template('index.html', message='Authentication failed. Please check your credentials.')
 @app.route('/verify_otp', methods=['POST'])
 @app.route('/verify_otp', methods=['POST'])
 @app.route('/verify_otp_and_grant_access', methods=['POST'])
