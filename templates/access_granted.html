@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Granted</title>
+</head>
+<style>
+    body {
+        background-image: url("{{ url_for('static', filename='img/back1.svg') }}");
+        background-color: rgb(202, 235, 221);
+    }
+
+    @font-face {
+        font-family: 'Century Gothic';
+        src: url("{{ url_for('static', filename='font/CenturyGothic.ttf') }}") format('truetype');
+    }
+
+    body {
+        font-family: 'Century Gothic', sans-serif;
+    }
+
+    h1,
+    h3 {
+        font-size: 45px;
+        background-color: black;
+        animation: gradient 10s ease infinite;
+        background-size: 400% 400%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: 0.05em;
+        font-weight: 900;
+        line-height: 1.5;
+        text-align: center;
+    }
+
+    h1 {
+        filter: blur(0);
+    }
+
+    h3 {
+        font-size: 30px;
+    }
+
+    a {
+        color: rgb(27, 1, 1);
+        text-decoration: underline;
+        display: block;
+        margin-top: 10px;
+    }
+
+    img {
+        width: 350px;
+        /* Adjust the width as needed */
+        height: auto;
+        border-radius: 8px;
+        margin: 0 auto;
+        text-align: center;
+        display: block;
+    }
+</style>
+
+<body>
+    <h1>CONGRATULATIONS!!</h1>
+    <h3>Access granted to {{ resource }} Plan!</h3>
+
+    {% if resource == 'Project' %}
+    <a href='https://docs.google.com/document/d/1u4yFpE34nBx4sOPkpnTmuyXW8bTe4Hw-a_8Vwem96xY/edit'><img
+            src="{{ url_for('static', filename='img/file.png') }}" alt="Project Thumbnail">
+    </a>
+
+    {% elif resource == 'Task' %}
+    <p>Visit the <a
+            href="{{ url_for('https://docs.google.com/document/d/14vwJeLOyQW4flzM1qiT8uw6iszFgu9etR5Un2at7HRQ/edit?usp=sharing') }}">Task
+            Template</a> for more details.</p>
+    <img src="{{ url_for('static', filename='images/file.png') }}" alt="Task Thumbnail">
+    {% elif resource == 'Bug' %}
+    <p>Visit the <a
+            href="https://docs.google.com/document/d/1JPdWiLbG_CWOdTC6MGyG3utAcDBYXSfj419NR2vDs4s/edit?usp=sharing">Bug
+            Template</a> for more details.</p>
+    <img src="{{ url_for('static', filename='images/file.png') }}" alt="Bug Thumbnail">
+    {% elif resource == 'Code' %}
+    <p>Visit the <a
+            href="https://docs.google.com/document/d/1OT2imSVZH93yiYvCCNypBP0U5A4YFPBuyjGSrLKkjuE/edit?usp=sharing">Code
+            Template</a> for more details.</p>
+    <img src="{{ url_for('static', filename='images/file.png') }}" alt="Code Thumbnail">
+    {% endif %}
+</body>
+
+</html>

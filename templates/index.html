@@ -14,12 +14,12 @@
 
     <style>
         @font-face {
-            font-family: 'Guminert';
-            src: url("{{ url_for('static', filename='font/Guminert.ttf') }}") format('truetype');
+            font-family: 'Century Gothic';
+            src: url("{{ url_for('static', filename='font/CenturyGothic.ttf') }}") format('truetype');
         }
 
         body {
-            font-family: 'Guminert', sans-serif;
+            font-family: 'Century Gothic', sans-serif;
         }
 
         * {
@@ -58,6 +58,9 @@
 
         h3 {
             font-size: 25px;
+            letter-spacing: 0;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            font-weight: 700;
         }
 
         .glass {
@@ -130,14 +133,8 @@
             text-align: left;
         }
 
-        .btn {
-            display: flex;
-            border: 0 solid;
-            width: 30%;
-        }
-
         button {
-            background: -webkit-linear-gradient(-45deg, #16e495, #16e495, #16e495, #e986ec);
+            background-color: rgb(125, 209, 177);
             animation: gradient 10s ease infinite;
             background-size: 400% 400%;
             border: 0 solid;
@@ -178,7 +175,7 @@
 <body>
     <div class="container-fluid center-container">
         <header>
-            <h1>Access Control Mechanism</h1>
+            <h1>ACCESS CONTROL MECHANISM</h1>
         </header>
         <main>
             <div>
@@ -199,7 +196,7 @@
                         {% endif %}
 
                         <hr>
-                        <button type="submit" class=" btn btn-primary">Submit</button>
+                        <button type="submit">Submit</button>
                     </div>
                 </form>
             </div>

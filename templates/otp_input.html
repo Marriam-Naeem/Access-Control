@@ -10,12 +10,15 @@
 </head>
 <style>
     @font-face {
-        font-family: 'Guminert';
-        src: url("{{ url_for('static', filename='font/Guminert.ttf') }}") format('truetype');
+        font-family: 'Century Gothic';
+        src: url("{{ url_for('static', filename='font/CenturyGothic.ttf') }}") format('truetype');
     }
 
     body {
-        font-family: 'Guminert', sans-serif;
+        font-family: 'Century Gothic', sans-serif;
+    }
+
+    body {
         font-weight: 500;
         background-color: rgb(202, 235, 221);
         background-image: url("{{ url_for('static', filename='img/back.svg') }}");
@@ -129,7 +132,7 @@
 
     <form method="post" action="/verify_otp_and_grant_access">
         <h1>OTP Verification</h1>
-        <p>Enter the OTP sent to your email and select a resource:</p>
+        <p>Enter the OTP sent to your email and select a resource</p>
         <input type="hidden" name="email" value="{{ email }}">
         <label for="otp">OTP:</label>
         <input type="text" name="otp" required title="otp">
