@@ -186,20 +186,22 @@ def get_user_role(email):
     return None  # Return None if the email is not found
 
 def grant_access(resource, email):
-    if check_location_access():
-        role = get_user_role(email)
-        if role == 'Project_Manager' & resource == 'Project':
-            return True
-        elif role == 'Developer' & resource == 'Task':
-            return True
-        elif role == 'Developer' & resource == 'Bug':
-            return True
-        elif role == 'Developer' & resource == 'Project':
-            return False
-        elif role == 'Developer' & resource == 'Code':
-            return True
-        elif role == 'SQA_Engineer' & resource == 'Project':
-            return False
+
+    role = get_user_role(email)
+    if role == 'Project_Manager' and resource == 'Project':
+        return True
+    elif role == 'Developer' and resource == 'Task':
+        return True
+    elif role == 'Developer' and resource == 'Bug':
+        return True
+    elif role == 'Developer' and resource == 'Project':
+        return False
+    elif role == 'Developer' and resource == 'Code':
+        return True
+    elif role == 'SQA_Engineer' and resource == 'Project':
+        return False
+    else:
+        return False
 
 def generate_otp():
     return ''.join(random.choices(string.digits, k=6))
@@ -239,13 +241,19 @@ def main():
 
 @app.route('/verify_otp', methods=['POST'])
 @app.route('/verify_otp', methods=['POST'])
-def verify_otp():
+@app.route('/verify_otp_and_grant_access', methods=['POST'])
+def verify_otp_and_grant_access():
     entered_otp = flask.request.form['otp']
-
+    selected_resource = flask.request.form['resource']
+    print(selected_resource)
     stored_otp = get_stored_otp()
 
-    if stored_otp and entered_otp == stored_otp:
-        return 'OTP verified successfully!'
+    if entered_otp == stored_otp:
+        # OTP verified, now check access
+        if grant_access(selected_resource, EMAIL):
+            return f'Access granted to {selected_resource}!'
+        else:
+            return f'Access denied to {selected_resource}. Please check your permissions.'
     else:
         return 'Invalid OTP. Please try again.'
 
