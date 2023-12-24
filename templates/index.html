@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Access Control Mechanism</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS v5.2.1 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <style>
+        @font-face {
+            font-family: 'Guminert';
+            src: url("{{ url_for('static', filename='font/Guminert.ttf') }}") format('truetype');
+        }
+
+        body {
+            font-family: 'Guminert', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid center-container">
+        <header>
+            <h1>Access Control Mechanism</h1>
+        </header>
+        <main>
+            <div>
+                <form action="{{ url_for('main') }}" method="POST">
+                    <div class="glass">
+                        <div>
+                            <h3>Sign In To Access Control System</h3>
+                            <label for="Email" class="form-label">Email</label>
+                            <input type="email" class="form-control" name="Email" id="Email" aria-describedby="helpId"
+                                required>
+                            <label for="Password" class="form-label">Password</label>
+                            <input type="password" class="form-control" name="Password" id="Password"
+                                aria-describedby="helpId" required>
+
+                        </div>
+                        <hr>
+                        <button type="submit" class=" btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+        <!-- Bootstrap JavaScript Libraries -->
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+        integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous">
+        </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js"
+        integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous">
+        </script>
+</body>
+
+</html>
