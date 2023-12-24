@@ -43,6 +43,10 @@
                                 aria-describedby="helpId" required>
 
                         </div>
+                        {% if message %}
+                        <p style="color: red;">{{ message }}</p>
+                        {% endif %}
+
                         <hr>
                         <button type="submit" class=" btn btn-primary">Submit</button>
                     </div>

@@ -151,19 +151,37 @@
 
 # if __name__ == '__main__':
 #     app.run(debug=True)
-
-
-
 import flask
-from datetime import datetime
 import random
-import uuid
-import socket
-import ipaddress
-import secrets
-import requests
+import string
+from flask_mail import Mail, Message
 
 app = flask.Flask(__name__, template_folder='templates')
+
+# Flask-Mail configuration
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = 'pisces.zaiby03@gmail.com'  # Replace with your Gmail email
+app.config['MAIL_PASSWORD'] = 'yhqq uoji swbj qfbq'  # Replace with your Gmail password
+
+mail = Mail(app)
+STORED_OTP = ''
+def generate_otp():
+    return ''.join(random.choices(string.digits, k=6))
+
+def send_otp_email(email, otp):
+    msg = Message('Your OTP', sender='wemma7932@gmail.com', recipients=[email])
+    msg.body = f'Your OTP is: {otp}'
+    mail.send(msg)
+
+def set_stored_otp(otp):
+    global STORED_OTP
+    STORED_OTP = otp
+
+def get_stored_otp():
+    return STORED_OTP
+
 @app.route('/', methods=['GET', 'POST'])
 def main():
     if flask.request.method == 'GET':
@@ -171,13 +189,30 @@ def main():
     elif flask.request.method == 'POST':
         email = flask.request.form['Email']
         password = flask.request.form['Password']
+
         # Authenticate the user using AccessControl
         auth_result = authenticate_user(email, password)
 
-        if auth_result==True:
-            return flask.render_template('result_Yes.html')
+        if auth_result:
+            otp = generate_otp()
+            set_stored_otp(otp)
+            send_otp_email(email, otp)
+            return flask.render_template('otp_input.html', email=email)
         else:
-            return flask.render_template('result_No.html')
+            return flask.render_template('index.html', message='Authentication failed. Please check your credentials.')
+
+@app.route('/verify_otp', methods=['POST'])
+@app.route('/verify_otp', methods=['POST'])
+def verify_otp():
+    entered_otp = flask.request.form['otp']
+
+    stored_otp = get_stored_otp()
+
+    if stored_otp and entered_otp == stored_otp:
+        return 'OTP verified successfully!'
+    else:
+        return 'Invalid OTP. Please try again.'
+
 
 def authenticate_user(email, password):
     users_info = get_attributes_dict()
@@ -188,50 +223,53 @@ def authenticate_user(email, password):
 
 def get_attributes_dict():
     users_info = [
-    {
-        'email': 'zanwaar.bese20seecs@seecs.edu.pk',
-        'password': 'password',
-        'username': 'zanwaarpassword',
-        'MFA_Enabled': True,
-        'IPv4': '39.58.249.103',
-        'Role': 'Project_Manager'
-        
-    },
-    {
-        'email': 'jbfjdhanwaar.bese20seecs@seecs.edu.pk',
-        'password': 'password',
-        'username': 'zanwaarpassword',
-        'MFA_Enabled': True,
-        'IPv4': '39.58.249.103',
-        'Role': 'Project_Manager'
-    },
-    {
-        'email': 'skdjskanwaar.bese20seecs@seecs.edu.pk',
-        'password': 'password',
-        'username': 'zanwaarpassword',
-        'MFA_Enabled': True,
-        'IPv4': '39.58.249.103',
-        'Role': 'Project_Manager'
-    },
-    {
-        'email': 'zanwaar.bese20seecs@seecs.edu.pk',
-        'password': 'password',
-        'username': 'zanwaarpassword',
-        'MFA_Enabled': True,
-        'IPv4': '39.58.249.103',
-        'Role': 'Project_Manager'
-    },
-    {
-        'email': 'sanwaar.bese20seecs@seecs.edu.pk',
-        'password': 'password',
-        'username': 'sanwaarpassword',
-        'MFA_Enabled': True,
-        'IPv4': '39.58.249.103',
-        'Role': 'Project_Manager'
-    }
+        {
+            'email': 'zanwaar.bese20seecs@seecs.edu.pk',
+            'password': 'password',
+            'username': 'zanwaarpassword',
+            'MFA_Enabled': True,
+            'IPv4': '39.58.249.103',
+            'Role': 'Project_Manager',
+            'OTP': ''
+        },
+        {
+            'email': 'jbfjdhanwaar.bese20seecs@seecs.edu.pk',
+            'password': 'password',
+            'username': 'zanwaarpassword',
+            'MFA_Enabled': True,
+            'IPv4': '39.58.249.103',
+            'Role': 'Project_Manager',
+            'OTP': ''
+        },
+        {
+            'email': 'skdjskanwaar.bese20seecs@seecs.edu.pk',
+            'password': 'password',
+            'username': 'zanwaarpassword',
+            'MFA_Enabled': True,
+            'IPv4': '39.58.249.103',
+            'Role': 'Project_Manager',
+            'OTP': ''
+        },
+        {
+            'email': 'zanwaar.bese20seecs@seecs.edu.pk',
+            'password': 'password',
+            'username': 'zanwaarpassword',
+            'MFA_Enabled': True,
+            'IPv4': '39.58.249.103',
+            'Role': 'Project_Manager',
+            'OTP': ''
+        },
+        {
+            'email': 'sanwaar.bese20seecs@seecs.edu.pk',
+            'password': 'password',
+            'username': 'sanwaarpassword',
+            'MFA_Enabled': True,
+            'IPv4': '39.58.249.103',
+            'Role': 'Project_Manager',
+            'OTP': ''
+        }
     ]
-
-    return users_info;
+    return users_info
 
 if __name__ == '__main__':
     app.run(debug=True)
