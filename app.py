@@ -151,6 +151,7 @@
 
 # if __name__ == '__main__':
 #     app.run(debug=True)
+from datetime import datetime, time
 import flask
 import random
 import string
@@ -175,9 +176,15 @@ def check_location_access():
         return '.'.join(ip_address.split('.')[:2])
     hostname = socket.gethostname()
     host_ip_address = socket.gethostbyname(hostname)
-    required_ip = "100.5.6.7"
+    required_ip = "192.168.100.12"
     return get_first_two_octets(host_ip_address) == get_first_two_octets(required_ip)
 
+def check_working_hours():
+    now = datetime.now().time()
+    start_time = time(9, 0, 0)
+    end_time = time(7, 0, 0)
+
+    return start_time <= now <= end_time
 def get_user_role(email):
     users_info = get_attributes_dict()
     for user_info in users_info:
@@ -186,20 +193,22 @@ def get_user_role(email):
     return None  # Return None if the email is not found
 
 def grant_access(resource, email):
-
-    role = get_user_role(email)
-    if role == 'Project_Manager' and resource == 'Project':
-        return True
-    elif role == 'Developer' and resource == 'Task':
-        return True
-    elif role == 'Developer' and resource == 'Bug':
-        return True
-    elif role == 'Developer' and resource == 'Project':
-        return False
-    elif role == 'Developer' and resource == 'Code':
-        return True
-    elif role == 'SQA_Engineer' and resource == 'Project':
-        return False
+    if (check_location_access()) and (check_working_hours()):
+        role = get_user_role(email)
+        if role == 'Project_Manager' and resource == 'Project':
+            return True
+        elif role == 'Developer' and resource == 'Task':
+            return True
+        elif role == 'Developer' and resource == 'Bug':
+            return True
+        elif role == 'Developer' and resource == 'Project':
+            return False
+        elif role == 'Developer' and resource == 'Code':
+            return True
+        elif role == 'SQA_Engineer' and resource == 'Project':
+            return False
+        else:
+            return False
     else:
         return False
 
