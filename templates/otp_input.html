@@ -6,7 +6,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OTP Verification</title>
+
 </head>
+<style>
+    @font-face {
+        font-family: 'Guminert';
+        src: url("{{ url_for('static', filename='font/Guminert.ttf') }}") format('truetype');
+    }
+
+    body {
+        font-family: 'Guminert', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+        flex-direction: column;
+    }
+
+    h1 {
+        color: #333;
+    }
+
+    form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 300px;
+        text-align: left;
+        box-sizing: border-box;
+        margin: 0 auto;
+        /* Center the form horizontally */
+        max-width: 300px;
+    }
+
+    label {
+        margin-bottom: 8px;
+        display: block;
+        color: #333;
+    }
+
+    input,
+    select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    button {
+        background-color: #93d395;
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    form {
+        text-align: left;
+        max-width: 300px;
+    }
+
+    button {
+        margin-top: 10px;
+        display: block;
+        margin: 0 auto;
+    }
+
+    select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+    }
+
+    option {
+        padding: 5px;
+    }
+</style>
 
 <body>
     <h1>OTP Verification</h1>
@@ -15,10 +118,10 @@
     <form method="post" action="/verify_otp_and_grant_access">
         <input type="hidden" name="email" value="{{ email }}">
         <label for="otp">OTP:</label>
-        <input type="text" name="otp" required>
+        <input type="text" name="otp" required title="otp">
 
         <label for="resource">Select Resource:</label>
-        <select name="resource" required>
+        <select title="resource" name="resource" required>
             <option value="Project">Project</option>
             <option value="Task">Task</option>
             <option value="Bug">Bug</option>

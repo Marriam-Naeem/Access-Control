@@ -158,7 +158,8 @@ import string
 import socket
 from flask_mail import Mail, Message
 
-app = flask.Flask(__name__, template_folder='templates')
+app = flask.Flask(__name__, template_folder='templates', static_folder='static')
+
 
 # Flask-Mail configuration
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
