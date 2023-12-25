@@ -1,6 +1,3 @@
-#brute force
-#traffic analysis
-
 from datetime import datetime, time, timedelta
 import flask
 import random
@@ -31,6 +28,8 @@ def increment_failed_login_attempts(email):
     if email in LOGIN_ATTEMPTS:
         LOGIN_ATTEMPTS[email]['attempts'] += 1
     else:
+        current_time = datetime.now()
+        timestamp_str = current_time.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]  # Include milliseconds
         LOGIN_ATTEMPTS[email] = {'attempts': 1, 'timestamp': datetime.now()}
 
 
@@ -42,8 +41,11 @@ def reset_failed_login_attempts(email):
 def is_user_locked_out(email):
     if email in LOGIN_ATTEMPTS:
         attempts_info = LOGIN_ATTEMPTS[email]
-        timestamp = attempts_info['timestamp']
+        timestamp_str = attempts_info['timestamp']
         attempts = attempts_info['attempts']
+
+        timestamp_format = '%Y-%m-%d %H:%M:%S.%f'
+        timestamp = datetime.strptime(timestamp_str, timestamp_format)
 
         # Check if the threshold is reached within the specified timeframe
         if attempts >= LOCKOUT_THRESHOLD and datetime.now() - timestamp < LOCKOUT_TIMEFRAME:
