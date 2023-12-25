@@ -62,7 +62,7 @@ def check_location_access():
 def check_working_hours():
     now = datetime.now().time()
     start_time = time(9, 0, 0)
-    end_time = time(17, 0, 0)
+    end_time = time(18, 0, 0)
     return start_time <= now <= end_time
 
 def get_user_role(email):

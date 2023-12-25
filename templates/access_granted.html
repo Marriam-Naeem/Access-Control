@@ -71,21 +71,21 @@
     </a>
 
     {% elif resource == 'Task' %}
-    <p>Visit the <a
-            href="{{ url_for('https://docs.google.com/document/d/14vwJeLOyQW4flzM1qiT8uw6iszFgu9etR5Un2at7HRQ/edit?usp=sharing') }}">Task
-            Template</a> for more details.</p>
-    <img src="{{ url_for('static', filename='images/file.png') }}" alt="Task Thumbnail">
+    <a href="https://docs.google.com/document/d/14vwJeLOyQW4flzM1qiT8uw6iszFgu9etR5Un2at7HRQ/edit">
+        <img src="{{ url_for('static', filename='img/file.png') }}" alt="Task Thumbnail">
+    </a>
+
     {% elif resource == 'Bug' %}
-    <p>Visit the <a
-            href="https://docs.google.com/document/d/1JPdWiLbG_CWOdTC6MGyG3utAcDBYXSfj419NR2vDs4s/edit?usp=sharing">Bug
-            Template</a> for more details.</p>
-    <img src="{{ url_for('static', filename='images/file.png') }}" alt="Bug Thumbnail">
+    <a href="https://docs.google.com/document/d/1JPdWiLbG_CWOdTC6MGyG3utAcDBYXSfj419NR2vDs4s/edit">
+        <img src="{{ url_for('static', filename='img/file.png') }}" alt="Bug Thumbnail">
+    </a>
+
     {% elif resource == 'Code' %}
-    <p>Visit the <a
-            href="https://docs.google.com/document/d/1OT2imSVZH93yiYvCCNypBP0U5A4YFPBuyjGSrLKkjuE/edit?usp=sharing">Code
-            Template</a> for more details.</p>
-    <img src="{{ url_for('static', filename='images/file.png') }}" alt="Code Thumbnail">
+    <a href="https://docs.google.com/document/d/1OT2imSVZH93yiYvCCNypBP0U5A4YFPBuyjGSrLKkjuE/edit">
+        <img src="{{ url_for('static', filename='img/file.png') }}" alt="Code Thumbnail">
+    </a>
     {% endif %}
+
 </body>
 
 </html>
