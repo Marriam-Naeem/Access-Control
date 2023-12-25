@@ -1,9 +1,12 @@
+#brute force
+#traffic analysis
 
 from datetime import datetime, time, timedelta
 import flask
 import random
 import string
 import socket
+import hashlib
 from flask_mail import Mail, Message
 
 app = flask.Flask(__name__, template_folder='templates', static_folder='static')
@@ -59,9 +62,9 @@ def check_location_access():
 def check_working_hours():
     now = datetime.now().time()
     start_time = time(9, 0, 0)
-    end_time = time(1, 0, 0)
-
+    end_time = time(17, 0, 0)
     return start_time <= now <= end_time
+
 def get_user_role(email):
     users_info = get_attributes_dict()
     for user_info in users_info:
@@ -72,7 +75,7 @@ def get_user_role(email):
 def grant_access(resource, email):
     if (check_location_access()) and (check_working_hours()):
         role = get_user_role(email)
-        if role == 'Project_Manager' and resource == 'Project':
+        if role == 'Project_Manager':
             return True
         elif role == 'Developer' and resource == 'Task':
             return True
@@ -84,6 +87,12 @@ def grant_access(resource, email):
             return True
         elif role == 'SQA_Engineer' and resource == 'Project':
             return False
+        elif role == 'SQA_Engineer' and resource == 'Bug':
+            return True
+        elif role == 'SQA_Engineer' and resource == 'Task':
+            return False
+        elif role == 'SQA_Engineer' and resource == 'Code':
+            return True        
         else:
             return False
     else:
@@ -154,8 +163,9 @@ def verify_otp_and_grant_access():
 
 def authenticate_user(email, password):
     users_info = get_attributes_dict()
+    hashed_password = hashlib.sha3_256(password.encode()).hexdigest()
     for user_info in users_info:
-        if user_info['email'] == email and user_info['password'] == password:
+        if user_info['email'] == email and user_info['password'] == hashed_password:
             return True
     return False
 
@@ -163,48 +173,28 @@ def get_attributes_dict():
     users_info = [
         {
             'email': 'zanwaar.bese20seecs@seecs.edu.pk',
-            'password': 'password',
-            'username': 'zanwaarpassword',
-            'MFA_Enabled': True,
-            'IPv4': '39.58.249.103',
+            'password': hashlib.sha3_256('password'.encode()).hexdigest(),
             'Role': 'Project_Manager',
-            'OTP': ''
         },
         {
             'email': 'jbfjdhanwaar.bese20seecs@seecs.edu.pk',
-            'password': 'password',
-            'username': 'zanwaarpassword',
-            'MFA_Enabled': True,
-            'IPv4': '39.58.249.103',
+            'password': hashlib.sha3_256('password'.encode()).hexdigest(),
             'Role': 'Project_Manager',
-            'OTP': ''
         },
         {
             'email': 'skdjskanwaar.bese20seecs@seecs.edu.pk',
-            'password': 'password',
-            'username': 'zanwaarpassword',
-            'MFA_Enabled': True,
-            'IPv4': '39.58.249.103',
+            'password': hashlib.sha3_256('password'.encode()).hexdigest(),
             'Role': 'Project_Manager',
-            'OTP': ''
         },
         {
             'email': 'tanwaar.bese20seecs@seecs.edu.pk',
-            'password': 'password',
-            'username': 'zanwaarpassword',
-            'MFA_Enabled': True,
-            'IPv4': '39.58.249.103',
-            'Role': 'Developer',
-            'OTP': ''
+            'password': hashlib.sha3_256('password'.encode()).hexdigest(),
+            'Role': 'SQA_Engineer',
         },
         {
             'email': 'sanwaar.bese20seecs@seecs.edu.pk',
-            'password': 'password',
-            'username': 'sanwaarpassword',
-            'MFA_Enabled': True,
-            'IPv4': '39.58.249.103',
+            'password': hashlib.sha3_256('password'.encode()).hexdigest(),
             'Role': 'Developer',
-            'OTP': ''
         }
     ]
     return users_info
