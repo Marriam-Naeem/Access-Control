@@ -2,6 +2,7 @@ import socket
 import unittest
 from datetime import datetime
 from unittest.mock import patch
+import hashlib
 
 from flask import Flask
 
@@ -26,7 +27,7 @@ class FlaskAppTests(unittest.TestCase):
         self.assertIn(b'Authentication failed', response.data)
 
     def test_valid_authentication(self):
-        response = self.app.post('/', data=dict(Email='zanwaar.bese20seecs@seecs.edu.pk', Password='password'))
+        response = self.app.post('/', data=dict(Email='mnaeem.bese21seecs@seecs.edu.pk', Password='password'))
     
     
         self.assertEqual(response.status_code, 200)
@@ -71,13 +72,13 @@ class FlaskAppTests(unittest.TestCase):
     @patch('app.datetime', autospec=True)
     def test_check_working_hours(self,mocked_datetime):
         # Assuming the current time is within working hours
-            mocked_datetime.now.return_value = datetime(2023, 1, 1, 9, 0, 0)  # January 1, 2023, 9:00 AM
+            mocked_datetime.now.return_value = datetime(2024, 1, 1, 9, 0, 0)  # January 1, 2023, 9:00 AM
             print(check_working_hours())
             self.assertTrue(check_working_hours())
 
         # Assuming the current time is outside working hours
         
-            mocked_datetime.now.return_value = datetime(2023, 1, 1, 18, 0, 0)  # January 1, 2023, 6:00 PM
+            mocked_datetime.now.return_value = datetime(2024, 1, 1, 23, 0, 0)  # January 1, 2023, 6:00 PM
             print(check_working_hours())
             self.assertFalse(check_working_hours())
 
@@ -85,41 +86,43 @@ class FlaskAppTests(unittest.TestCase):
 
 #-------------------------------------------------------------
     def test_successful_login_and_otp_verification(self):
-        with patch('app.authenticate_user', return_value=True):
-            response_login = self.app.post('/', data=dict(Email='zanwaar.bese20seecs@seecs.edu.pk', Password='password'))
-            self.assertEqual(response_login.status_code, 200)
-            self.assertIn(b'OTP Verification', response_login.data)
+            with patch('app.authenticate_user', return_value=True), \
+                patch('app.generate_otp', return_value='123'), \
+                patch('app.send_otp_email'), \
+                patch('app.get_stored_otp', return_value={'otp': '123', 'timestamp': datetime.now()}), \
+                patch('app.grant_access', return_value=True):
 
-        with patch('app.generate_otp', return_value='123456'), \
-            patch('app.send_otp_email'), \
-            patch('app.get_stored_otp', return_value='123456'), \
-            patch('app.grant_access', return_value=True):
+                # Simulate successful login
+                response_login = self.app.post('/', data=dict(Email='mnaeem.bese21seecs@seecs.edu.pk', Password='password'))
+                self.assertEqual(response_login.status_code, 200)
+                self.assertIn(b'OTP Verification', response_login.data)
 
-            response_verify_otp = self.app.post('/verify_otp_and_grant_access',
-                                                data=dict(otp='123456', resource='Project'))
-            self.assertEqual(response_verify_otp.status_code, 200)
-            self.assertIn(b'Access granted', response_verify_otp.data)
+                # Simulate OTP verification and access granting
+                response_verify_otp = self.app.post('/verify_otp_and_grant_access',
+                                                    data=dict(otp='123', resource='Project'))
+                self.assertEqual(response_verify_otp.status_code, 200)
+                self.assertIn(b'Access granted', response_verify_otp.data)
 
     def test_unsuccessful_login_incorrect_credentials(self):
         with patch('app.authenticate_user', return_value=False):
-            response = self.app.post('/', data=dict(Email='zanwaar.bese20seecs@seecs.edu.pk', Password='wrong_password'))
+            response = self.app.post('/', data=dict(Email='mnaeem.bese21seecs@seecs.edu.pk', Password='wrong_password'))
             self.assertEqual(response.status_code, 200)
             self.assertIn(b'Authentication failed. Please check your credentials.', response.data)
 
     def test_unsuccessful_login_account_locked(self):
         # Set the number of login attempts to reach the lockout threshold
-        LOGIN_ATTEMPTS['zanwaar.bese20seecs@seecs.edu.pk'] = {'attempts': 2, 'timestamp': '2023-01-01 00:00:00.000'}
+        LOGIN_ATTEMPTS['mnaeem.bese20seecs@seecs.edu.pk'] = {'attempts': 2, 'timestamp': '2023-01-01 00:00:00.000'}
 
         with patch('app.is_user_locked_out', return_value=True):
-            response = self.app.post('/', data=dict(Email='zanwaar.bese20seecs@seecs.edu.pk', Password='wrong_password'))
+            response = self.app.post('/', data=dict(Email='mnaeem.bese21seecs@seecs.edu.pk', Password='wrong_password'))
             self.assertEqual(response.status_code, 200)
             self.assertIn(b'Account locked due to multiple unsuccessful login attempts. Please try again later.', response.data)
 
     def test_unsuccessful_otp_verification(self):
-        with patch('app.get_stored_otp', return_value='654321'), \
-            patch('app.grant_access', return_value=False):
+        with patch('app.get_stored_otp', return_value={'otp': '654', 'timestamp': None}), \
+             patch('app.grant_access', return_value=False):
 
-            response = self.app.post('/verify_otp_and_grant_access',data=dict(otp='123456', resource='Project'))
+            response = self.app.post('/verify_otp_and_grant_access', data=dict(otp='123', resource='Project'))
             self.assertEqual(response.status_code, 200)
             self.assertIn(b'Authentication failed due to Incorrect OTP', response.data)
 
@@ -127,12 +130,32 @@ class FlaskAppTests(unittest.TestCase):
     def test_get_attributes_dict(self):
             # Arrange
             expected_users_info = [
-                {'email': 'zanwaar.bese20seecs@seecs.edu.pk', 'password': 'password', 'username': 'zanwaarpassword', 'MFA_Enabled': True, 'IPv4': '39.58.249.103', 'Role': 'Project_Manager', 'OTP': ''},
-                {'email': 'jbfjdhanwaar.bese20seecs@seecs.edu.pk', 'password': 'password', 'username': 'zanwaarpassword', 'MFA_Enabled': True, 'IPv4': '39.58.249.103', 'Role': 'Project_Manager', 'OTP': ''},
-                {'email': 'skdjskanwaar.bese20seecs@seecs.edu.pk', 'password': 'password', 'username': 'zanwaarpassword', 'MFA_Enabled': True, 'IPv4': '39.58.249.103', 'Role': 'Project_Manager', 'OTP': ''},
-                {'email': 'tanwaar.bese20seecs@seecs.edu.pk', 'password': 'password', 'username': 'zanwaarpassword', 'MFA_Enabled': True, 'IPv4': '39.58.249.103', 'Role': 'Developer', 'OTP': ''},
-                {'email': 'sanwaar.bese20seecs@seecs.edu.pk', 'password': 'password', 'username': 'sanwaarpassword', 'MFA_Enabled': True, 'IPv4': '39.58.249.103', 'Role': 'Developer', 'OTP': ''}
-            ]
+        {
+            'email': 'mnaeem.bese21seecs@seecs.edu.pk',
+            'password': hashlib.sha3_256('password'.encode()).hexdigest(),
+            'Role': 'Project_Manager',
+        },
+        {
+            'email': 'jbfjdhanwaar.bese20seecs@seecs.edu.pk',
+            'password': hashlib.sha3_256('password'.encode()).hexdigest(),
+            'Role': 'Project_Manager',
+        },
+        {
+            'email': 'skdjskanwaar.bese20seecs@seecs.edu.pk',
+            'password': hashlib.sha3_256('password'.encode()).hexdigest(),
+            'Role': 'Project_Manager',
+        },
+        {
+            'email': 'mnaeem.bese21seecs@seecs.edu.pk',
+            'password': hashlib.sha3_256('password'.encode()).hexdigest(),
+            'Role': 'SQA_Engineer',
+        },
+        {
+            'email': 'sanwaar.bese20seecs@seecs.edu.pk',
+            'password': hashlib.sha3_256('password'.encode()).hexdigest(),
+            'Role': 'Developer',
+        }
+    ]
 
             # Act
             result = get_attributes_dict()

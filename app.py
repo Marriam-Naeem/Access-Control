@@ -15,11 +15,13 @@ LOGIN_ATTEMPTS = {}
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_SSL'] = True
-app.config['MAIL_USERNAME'] = 'pisces.zaiby03@gmail.com'  
-app.config['MAIL_PASSWORD'] = 'yhqq uoji swbj qfbq'
+app.config['MAIL_USERNAME'] = 'imaanmaryam977@gmail.com'  
+app.config['MAIL_PASSWORD'] = 'oaig btku admd edaq'
 
 mail = Mail(app)
-STORED_OTP = ''
+# STORED_OTP = ''
+STORED_OTP = {'otp': '', 'timestamp': None}
+
 EMAIL=''
 # Constants for lockout mechanism
 LOCKOUT_THRESHOLD = 3  
@@ -53,14 +55,16 @@ def check_location_access():
         return '.'.join(ip_address.split('.')[:2])
     hostname = socket.gethostname()
     host_ip_address = socket.gethostbyname(hostname)
-    required_ip = "192.168.100.12"
+    with open("ip_addresses.txt", "w") as file:
+        file.write(host_ip_address) 
+    required_ip = "192.168.1.9"
     return get_first_two_octets(host_ip_address) == get_first_two_octets(required_ip)
 
 # Utility Functions for Access Control: Time
 def check_working_hours():
     now = datetime.now().time()
     start_time = time(9, 0, 0)
-    end_time = time(18, 0, 0)
+    end_time = time(22, 0, 0)
     return start_time <= now <= end_time
 
 # Utility Functions for Access Control: Role
@@ -100,19 +104,27 @@ def grant_access(resource, email):
 
 # Utility Functions for OTP
 def generate_otp():
-    return ''.join(random.choices(string.digits, k=6))
+    # return ''.join(random.choices(string.digits, k=3))
+    return '006'
 
 def send_otp_email(email, otp):
-    msg = Message('Your OTP', sender='wemma7932@gmail.com', recipients=[email])
+    msg = Message('Your OTP', sender='imaanmaryam977@gmail.com', recipients=[email])
     msg.body = f'Your OTP is: {otp}'
     mail.send(msg)
 
 def set_stored_otp(otp):
     global STORED_OTP
-    STORED_OTP = otp
+    STORED_OTP = {'otp': otp, 'timestamp': datetime.now()}
 
 def get_stored_otp():
     return STORED_OTP
+
+def is_otp_valid():
+    if STORED_OTP['timestamp']:
+        # Check if OTP is within 2 minutes of creation
+        if datetime.now() - STORED_OTP['timestamp'] < timedelta(minutes=2):
+            return True
+    return False
 
 # Flask App Routes
 @app.route('/', methods=['GET', 'POST'])
@@ -131,9 +143,13 @@ def main():
         auth_result = authenticate_user(email, password)
         if auth_result:
             reset_failed_login_attempts(email)  # Reset failed login attempts upon successful login
-            otp = generate_otp()
-            set_stored_otp(otp)
-            send_otp_email(email, otp)
+            if not is_otp_valid():
+                otp = generate_otp()
+                set_stored_otp(otp)
+                send_otp_email(email, otp)
+            else:
+                stored_otp = get_stored_otp()['otp']
+                send_otp_email(email, stored_otp)
             return flask.render_template('otp_input.html', email=email)
         else:
             increment_failed_login_attempts(email)
@@ -148,7 +164,7 @@ def verify_otp_and_grant_access():
     entered_otp = flask.request.form['otp']
     selected_resource = flask.request.form['resource']
     print(selected_resource)
-    stored_otp = get_stored_otp()
+    stored_otp = get_stored_otp()['otp']
 
     if entered_otp == stored_otp:
         # OTP verified, now check access
@@ -164,6 +180,7 @@ def authenticate_user(email, password):
     users_info = get_attributes_dict()
     hashed_password = hashlib.sha3_256(password.encode()).hexdigest()
     for user_info in users_info:
+
         if user_info['email'] == email and user_info['password'] == hashed_password:
             return True
     return False
@@ -172,7 +189,7 @@ def authenticate_user(email, password):
 def get_attributes_dict():
     users_info = [
         {
-            'email': 'zanwaar.bese20seecs@seecs.edu.pk',
+            'email': 'mnaeem.bese21seecs@seecs.edu.pk',
             'password': hashlib.sha3_256('password'.encode()).hexdigest(),
             'Role': 'Project_Manager',
         },
@@ -187,7 +204,7 @@ def get_attributes_dict():
             'Role': 'Project_Manager',
         },
         {
-            'email': 'tanwaar.bese20seecs@seecs.edu.pk',
+            'email': 'mnaeem.bese21seecs@seecs.edu.pk',
             'password': hashlib.sha3_256('password'.encode()).hexdigest(),
             'Role': 'SQA_Engineer',
         },
@@ -200,4 +217,4 @@ def get_attributes_dict():
     return users_info
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='127.0.0.1', port=5000, threaded=True)
