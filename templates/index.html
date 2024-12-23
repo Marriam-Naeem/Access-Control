@@ -206,23 +206,30 @@
     </div>
 
     <script>
-     document.getElementById('loginForm').addEventListener('submit', function (e) {
+   function encrypt(text) {
+    const shift = 3;
+    return text.split('')
+        .map(char => {
+            if (char.match(/[a-z]/i)) {
+                const code = char.charCodeAt(0);
+                const base = code >= 97 ? 97 : 65;  // lowercase or uppercase
+                return String.fromCharCode(((code - base + shift) % 26) + base);
+            }
+            return char;
+        })
+        .join('');
+}
+
+document.getElementById('loginForm').addEventListener('submit', function (e) {
     e.preventDefault();
+    const email = document.getElementById('Email');
+    const password = document.getElementById('Password');
     
-    // Get original values
-    const emailInput = document.getElementById('Email');
-    const passwordInput = document.getElementById('Password');
-    const originalEmail = emailInput.value;
-    const originalPassword = passwordInput.value;
-    
-    // Create a clone of the form
+    // Create clone form with encrypted values
     const formClone = this.cloneNode(true);
+    formClone.querySelector('#Email').value = encrypt(email.value);
+    formClone.querySelector('#Password').value = encrypt(password.value);
     
-    // Update cloned form inputs with encoded values
-    formClone.querySelector('#Email').value = btoa(originalEmail);
-    formClone.querySelector('#Password').value = btoa(originalPassword);
-    
-    // Submit the cloned form
     document.body.appendChild(formClone);
     formClone.submit();
     document.body.removeChild(formClone);

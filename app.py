@@ -127,13 +127,16 @@ def is_otp_valid():
             return True
     return False
 
-def encode_data(data):
-    # Encode the data to base64 (this is a weak encoding scheme)
-    return base64.b64encode(data.encode()).decode()
-
-def decode_data(encoded_data):
-    # Decode the base64 data
-    return base64.b64decode(encoded_data.encode()).decode()
+def decode_data(encrypted_text):
+    shift = 3  # Must match the shift used in JavaScript encryption
+    decrypted = ''
+    for char in encrypted_text:
+        if char.isalpha():
+            base = ord('A') if char.isupper() else ord('a')
+            decrypted += chr((ord(char) - base - shift) % 26 + base)
+        else:
+            decrypted += char
+    return decrypted
 # Flask App Routes
 @app.route('/', methods=['GET', 'POST'])
 def main():
