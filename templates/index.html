@@ -31,7 +31,8 @@
 
         /* styles.css */
         body {
-            background-image: url("{{ url_for('static', filename='img/back1.svg') }}");
+            font-family: 'Century Gothic', sans-serif;
+            background-color: #001f3f; /* Dark navy blue */
         }
 
         .container-fluid {
@@ -41,12 +42,13 @@
         h1,
         h3 {
             font-size: 50px;
-            background-color: black;
+            background-color: rgb(248, 248, 248);
             animation: gradient 10s ease infinite;
             background-size: 400% 400%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: 0.05em;
+            padding-bottom: 40px;
             font-weight: 900;
             line-height: 1.5;
         }
@@ -69,7 +71,7 @@
             padding: 50px 35px;
             border: 1px solid rgba(255, 255, 255, 0.062);
             border-radius: 16px;
-            box-shadow: 0 4px 30px #50CA9B;
+            box-shadow: 0 4px 10px #1b4ec6;
             background-color: #cef1e470;
             width: 50%;
             margin: 10px auto;
@@ -92,7 +94,7 @@
 
         .InitialListStatus {
             background-color: #ebe1f7ce;
-            border: 0 solid #d5fffe;
+            border: 0 solid #2f2980;
             color: black;
         }
 
@@ -134,7 +136,7 @@
         }
 
         button {
-            background-color: rgb(125, 209, 177);
+            background-color: rgb(15, 18, 103);
             animation: gradient 10s ease infinite;
             background-size: 400% 400%;
             border: 0 solid;

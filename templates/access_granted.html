@@ -8,8 +8,7 @@
 </head>
 <style>
     body {
-        background-image: url("{{ url_for('static', filename='img/back1.svg') }}");
-        background-color: rgb(202, 235, 221);
+        background-color: #001f3f;
     }
 
     @font-face {
@@ -24,7 +23,7 @@
     h1,
     h3 {
         font-size: 45px;
-        background-color: black;
+        background-color: rgb(245, 245, 245);
         animation: gradient 10s ease infinite;
         background-size: 400% 400%;
         -webkit-background-clip: text;
@@ -44,7 +43,7 @@
     }
 
     a {
-        color: rgb(27, 1, 1);
+        color: rgb(255, 253, 253);
         text-decoration: underline;
         display: block;
         margin-top: 10px;
@@ -62,26 +61,26 @@
 </style>
 
 <body>
-    <h1>CONGRATULATIONS!!</h1>
+    <h1>PROJECT ASSETS</h1>
     <h3>Access granted to {{ resource }} Plan!</h3>
 
     {% if resource == 'Project' %}
-    <a href='https://docs.google.com/document/d/1u4yFpE34nBx4sOPkpnTmuyXW8bTe4Hw-a_8Vwem96xY/edit'><img
+    <a href='https://docs.google.com/document/d/1pQMpgJ2l3sutUZDLtSifIpd6YRQFE1yOjq1LG7E6ms4/edit?tab=t.0'><img
             src="{{ url_for('static', filename='img/file.png') }}" alt="Project Thumbnail">
     </a>
 
     {% elif resource == 'Task' %}
-    <a href="https://docs.google.com/document/d/14vwJeLOyQW4flzM1qiT8uw6iszFgu9etR5Un2at7HRQ/edit">
+    <a href="https://docs.google.com/document/d/1pQMpgJ2l3sutUZDLtSifIpd6YRQFE1yOjq1LG7E6ms4/edit?tab=t.0">
         <img src="{{ url_for('static', filename='img/file.png') }}" alt="Task Thumbnail">
     </a>
 
     {% elif resource == 'Bug' %}
-    <a href="https://docs.google.com/document/d/1JPdWiLbG_CWOdTC6MGyG3utAcDBYXSfj419NR2vDs4s/edit">
+    <a href="https://docs.google.com/document/d/1pQMpgJ2l3sutUZDLtSifIpd6YRQFE1yOjq1LG7E6ms4/edit?tab=t.0">
         <img src="{{ url_for('static', filename='img/file.png') }}" alt="Bug Thumbnail">
     </a>
 
     {% elif resource == 'Code' %}
-    <a href="https://docs.google.com/document/d/1OT2imSVZH93yiYvCCNypBP0U5A4YFPBuyjGSrLKkjuE/edit">
+    <a href="https://docs.google.com/document/d/1pQMpgJ2l3sutUZDLtSifIpd6YRQFE1yOjq1LG7E6ms4/edit?tab=t.0g">
         <img src="{{ url_for('static', filename='img/file.png') }}" alt="Code Thumbnail">
     </a>
     {% endif %}
