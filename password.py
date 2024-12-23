@@ -11,7 +11,7 @@ capture = pyshark.LiveCapture(interface=interface,tshark_path=tshark_path,displa
 
 print("Starting packet capture... Press Ctrl+C to stop.")
 try:
-    for packet in capture.sniff_continuously(packet_count=5):
+    for packet in capture.sniff_continuously(packet_count=10):
         print(f"Packet captured: {packet}")
 except KeyboardInterrupt:
     print("\nCapture stopped.")

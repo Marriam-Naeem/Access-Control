@@ -64,7 +64,7 @@ def check_location_access():
 def check_working_hours():
     now = datetime.now().time()
     start_time = time(9, 0, 0)
-    end_time = time(22, 0, 0)
+    end_time = time(23, 0, 0)
     return start_time <= now <= end_time
 
 # Utility Functions for Access Control: Role
@@ -159,12 +159,12 @@ def main():
                 return flask.render_template('index.html', message='Authentication failed. Please check your credentials.')
 @app.route('/verify_otp', methods=['POST'])
 @app.route('/verify_otp', methods=['POST'])
-@app.route('/verify_otp_and_grant_access', methods=['POST'])
+@app.route('/verify_otp_and_grant_access', methods=['GET'])
 def verify_otp_and_grant_access():
-    entered_otp = flask.request.form['otp']
-    selected_resource = flask.request.form['resource']
-    print(selected_resource)
-    stored_otp = get_stored_otp()['otp']
+    entered_otp = flask.request.args.get('otp')  # Use args.get() for GET requests
+    selected_resource = flask.request.args.get('resource')
+    print(f"Resource: {selected_resource}, OTP: {entered_otp}")
+    stored_otp = get_stored_otp().get('otp')
 
     if entered_otp == stored_otp:
         # OTP verified, now check access
@@ -209,7 +209,7 @@ def get_attributes_dict():
             'Role': 'SQA_Engineer',
         },
         {
-            'email': 'sanwaar.bese20seecs@seecs.edu.pk',
+            'email': 'marriamnaeem435@gmail.com',
             'password': hashlib.sha3_256('password'.encode()).hexdigest(),
             'Role': 'Developer',
         }
