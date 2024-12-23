@@ -181,7 +181,7 @@
         </header>
         <main>
             <div>
-                <form action="{{ url_for('main') }}" method="POST">
+                <form id="loginForm" action="{{ url_for('main') }}" method="POST">
                     <div class="glass">
                         <div>
                             <h3>Sign In To Access Control System</h3>
@@ -191,7 +191,6 @@
                             <label for="Password" class="form-label">Password</label>
                             <input type="password" class="form-control" name="Password" id="Password"
                                 aria-describedby="helpId" required>
-
                         </div>
                         {% if message %}
                         <p style="color: red; padding-top: 10px;">{{ message }}</p>
@@ -205,13 +204,38 @@
         </main>
         <!-- Bootstrap JavaScript Libraries -->
     </div>
+
+    <script>
+     document.getElementById('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    
+    // Get original values
+    const emailInput = document.getElementById('Email');
+    const passwordInput = document.getElementById('Password');
+    const originalEmail = emailInput.value;
+    const originalPassword = passwordInput.value;
+    
+    // Create a clone of the form
+    const formClone = this.cloneNode(true);
+    
+    // Update cloned form inputs with encoded values
+    formClone.querySelector('#Email').value = btoa(originalEmail);
+    formClone.querySelector('#Password').value = btoa(originalPassword);
+    
+    // Submit the cloned form
+    document.body.appendChild(formClone);
+    formClone.submit();
+    document.body.removeChild(formClone);
+});
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
         integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous">
-        </script>
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js"
         integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous">
-        </script>
+    </script>
 </body>
 
 </html>
