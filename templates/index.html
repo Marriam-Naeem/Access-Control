@@ -181,7 +181,7 @@
         </header>
         <main>
             <div>
-                <form action="{{ url_for('main') }}" method="POST">
+                <form id="loginForm" action="{{ url_for('main') }}" method="POST">
                     <div class="glass">
                         <div>
                             <h3>Sign In To Access Control System</h3>
@@ -191,7 +191,6 @@
                             <label for="Password" class="form-label">Password</label>
                             <input type="password" class="form-control" name="Password" id="Password"
                                 aria-describedby="helpId" required>
-
                         </div>
                         {% if message %}
                         <p style="color: red; padding-top: 10px;">{{ message }}</p>
@@ -205,13 +204,45 @@
         </main>
         <!-- Bootstrap JavaScript Libraries -->
     </div>
+
+    <script>
+   function encrypt(text) {
+    const shift = 3;
+    return text.split('')
+        .map(char => {
+            if (char.match(/[a-z]/i)) {
+                const code = char.charCodeAt(0);
+                const base = code >= 97 ? 97 : 65;  // lowercase or uppercase
+                return String.fromCharCode(((code - base + shift) % 26) + base);
+            }
+            return char;
+        })
+        .join('');
+}
+
+document.getElementById('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const email = document.getElementById('Email');
+    const password = document.getElementById('Password');
+    
+    // Create clone form with encrypted values
+    const formClone = this.cloneNode(true);
+    formClone.querySelector('#Email').value = encrypt(email.value);
+    formClone.querySelector('#Password').value = encrypt(password.value);
+    
+    document.body.appendChild(formClone);
+    formClone.submit();
+    document.body.removeChild(formClone);
+});
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
         integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous">
-        </script>
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js"
         integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous">
-        </script>
+    </script>
 </body>
 
 </html>

@@ -5,6 +5,7 @@ import random
 import string
 import socket
 import hashlib
+import base64
 from flask_mail import Mail, Message
 
 app = flask.Flask(__name__, template_folder='templates', static_folder='static')
@@ -56,7 +57,7 @@ def check_location_access():
     hostname = socket.gethostname()
     host_ip_address = socket.gethostbyname(hostname)
     with open("ip_addresses.txt", "w") as file:
-        file.write(host_ip_address) 
+        file.write(host_ip_address)
     required_ip = "192.168.1.9"
     return get_first_two_octets(host_ip_address) == get_first_two_octets(required_ip)
 
@@ -102,10 +103,10 @@ def grant_access(resource, email):
     else:
         return False
 
+
 # Utility Functions for OTP
 def generate_otp():
-    # return ''.join(random.choices(string.digits, k=3))
-    return '006'
+    return ''.join(random.choices(string.digits, k=4))
 
 def send_otp_email(email, otp):
     msg = Message('Your OTP', sender='imaanmaryam977@gmail.com', recipients=[email])
@@ -121,22 +122,37 @@ def get_stored_otp():
 
 def is_otp_valid():
     if STORED_OTP['timestamp']:
-        # Check if OTP is within 2 minutes of creation
-        if datetime.now() - STORED_OTP['timestamp'] < timedelta(minutes=2):
+        # Check if OTP is within 10 minutes of creation
+        if datetime.now() - STORED_OTP['timestamp'] < timedelta(minutes=5):
             return True
     return False
 
+def decode_data(encrypted_text):
+    shift = 3  # Must match the shift used in JavaScript encryption
+    decrypted = ''
+    for char in encrypted_text:
+        if char.isalpha():
+            base = ord('A') if char.isupper() else ord('a')
+            decrypted += chr((ord(char) - base - shift) % 26 + base)
+        else:
+            decrypted += char
+    return decrypted
 # Flask App Routes
 @app.route('/', methods=['GET', 'POST'])
 def main():
     if flask.request.method == 'GET':
         return flask.render_template('index.html')
     elif flask.request.method == 'POST':
-        email = flask.request.form['Email']
+        encoded_email = flask.request.form['Email']
+        encoded_password = flask.request.form['Password']
+        
         global EMAIL
-        EMAIL = email
-        password = flask.request.form['Password']
-        # Check if the user is locked out
+        EMAIL = encoded_email
+        
+        # Decode the values
+        email = decode_data(encoded_email)
+        password = decode_data(encoded_password)
+     
         if is_user_locked_out(email):
             return flask.render_template('index.html', message='Account locked due to multiple unsuccessful login attempts. Please try again later.')
         # Authenticate the user using AccessControl
@@ -187,6 +203,7 @@ def authenticate_user(email, password):
 
 # Utility Function for getting user attributes
 def get_attributes_dict():
+
     users_info = [
         {
             'email': 'mnaeem.bese21seecs@seecs.edu.pk',
@@ -194,9 +211,9 @@ def get_attributes_dict():
             'Role': 'Project_Manager',
         },
         {
-            'email': 'jbfjdhanwaar.bese20seecs@seecs.edu.pk',
+            'email': 'imaanibrar86@gmail.com',
             'password': hashlib.sha3_256('password'.encode()).hexdigest(),
-            'Role': 'Project_Manager',
+            'Role': 'Developer',
         },
         {
             'email': 'skdjskanwaar.bese20seecs@seecs.edu.pk',
